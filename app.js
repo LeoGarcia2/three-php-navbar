@@ -112,6 +112,7 @@ function init() {
                                 container.classList.remove('hovered');
                             });
                         });
+                        
                         //liste containers
                         navbarItems = [
                             {container: homeContainer, mesh: homeMesh},
@@ -141,14 +142,15 @@ function init() {
     renderer = new THREE.WebGLRenderer({antialias:true, alpha: true, canvas: globalContainer});
     renderer.setSize(viewportWidth, viewportHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
-    // document.body.appendChild(renderer.domElement);
   
 }
 
 //render loop
 function animate() {
     navbarItems.forEach((navbarItem) => {
+
         if(navbarItem.mesh != undefined) {
+
             if (navbarItem.container.classList.contains('hovered')) {
                 let rotationDirection = 1;
 
@@ -168,7 +170,9 @@ function animate() {
                     navbarItem.mesh.rotation.y -= 0.01;
                 }
             }
+
         }
+
     });
 
     requestAnimationFrame(animate);
@@ -179,6 +183,7 @@ function animate() {
 function render() {
 
     renderer.setScissorTest(true);
+
     scenes.forEach((scene) => {
 
       let sceneElement = scene.element;
@@ -204,7 +209,8 @@ function render() {
   
       renderer.render(scene, camera);
   
-    } );
+    });
+
     renderer.setScissorTest(false);
 
 }
@@ -219,6 +225,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //responsive
     window.addEventListener('resize', () => {
+
+        viewportWidth = document.querySelector('#sizeWindow').clientWidth;
+        viewportHeight = document.querySelector('#sizeWindow').clientHeight;
 
         camera.aspect = viewportWidth / viewportHeight;
 
