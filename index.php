@@ -2,7 +2,7 @@
 session_start();
 
 if (isset($_GET['login'])) {
-    $_SESSION['userLoggedIn'] = true;
+    $_SESSION['userIsLoggedIn'] = true;
 }
 
 if (isset($_GET['admin'])) {
@@ -10,7 +10,7 @@ if (isset($_GET['admin'])) {
 }
 
 if (isset($_GET['logout'])) {
-    $_SESSION['userLoggedIn'] = false;
+    $_SESSION['userIsLoggedIn'] = false;
     $_SESSION['userIsAdmin'] = false;
 }
 ?>
