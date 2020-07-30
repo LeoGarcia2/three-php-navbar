@@ -112,7 +112,7 @@ function init() {
                                 container.classList.remove('hovered');
                             });
                         });
-                        
+
                         //liste containers
                         navbarItems = [
                             {container: homeContainer, mesh: homeMesh},
@@ -152,6 +152,15 @@ function animate() {
         if(navbarItem.mesh != undefined) {
 
             if (navbarItem.container.classList.contains('hovered')) {
+                
+                if (navbarItem.container == adminLoginContainer) {
+
+                }
+                
+                if (navbarItem.container == logoutContainer) {
+
+                }
+
                 let rotationDirection = 1;
 
                 if (navbarItem.mesh.rotation.y > Math.PI/4) {
