@@ -43,12 +43,12 @@ if (isset($_GET['logout'])) {
 
             <?php if (isset($_SESSION['userIsLoggedIn']) && $_SESSION['userIsLoggedIn']) { ?>
 
-            <a title="Connexion Admin" class="container3d" id="adminLoginContainer" href="./index.php&admin=true"></a>
-            <a title="Se déconnecter" class="container3d" id="logoutContainer" href="./index.php&logout=true"></a>
+            <a title="Connexion Admin" class="container3d" id="adminLoginContainer" href="./index.php?admin=true"></a>
+            <a title="Se déconnecter" class="container3d" id="logoutContainer" href="./index.php?logout=true"></a>
 
             <?php } else {?>
 
-            <a title="Se connecter" class="container3d" id="loginContainer" href="./index.php&login=true"></a>
+            <a title="Se connecter" class="container3d" id="loginContainer" href="./index.php?login=true"></a>
 
             <?php } ?>
         </nav>
