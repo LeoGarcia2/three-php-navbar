@@ -37,11 +37,15 @@ if (isset($_GET['logout'])) {
 
             <?php if (isset($_SESSION['userIsLoggedIn']) && $_SESSION['userIsLoggedIn']) { ?>
 
-                <?php if (isset($_SESSION['userIsAdmin']) && $_SESSION['userIsAdmin']) { ?>
+                <?php if (isset($_SESSION['userIsAdmin']) && $_SESSION['userIsAdmin']) {
+                    $text = 'Merci d\'avoir essayé cette démo de menu de navigation utilisant THREE.JS et PHP !';
+                ?>
 
                 <a title="Panneau d'administration" class="container3d" id="adminPanelContainer" href="./index.php"></a>
 
-                <?php } else { ?>
+                <?php } else {
+                    $text = '... et maintenant sur le cadenas pour simuler le privilège administrateur';
+                ?>
 
                 <a title="Connexion Admin" class="container3d" id="adminLoginContainer" href="./index.php?admin=true"></a>
 
@@ -49,7 +53,9 @@ if (isset($_GET['logout'])) {
 
             <a title="Se déconnecter" class="container3d" id="logoutContainer" href="./index.php?logout=true"></a>
 
-            <?php } else {?>
+            <?php } else {
+                $text = 'Cliquez sur la clé pour simuler une connexion ...';
+            ?>
 
             <a title="Se connecter" class="container3d" id="loginContainer" href="./index.php?login=true"></a>
 
@@ -58,7 +64,7 @@ if (isset($_GET['logout'])) {
     </header>
 
     <main>
-        <p>Cliquez sur la clé pour simuler une connexion ...</p>
+        <p><?php echo $text; ?></p>
     </main>
     
     <script src="./app.js" type="module">
