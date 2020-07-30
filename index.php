@@ -33,22 +33,22 @@ if (isset($_GET['logout'])) {
     <canvas id="globalContainer"></canvas>
     <header>
         <nav>
-            <a title="Accueil" class="container3d" id="homeContainer" href="/"></a>
+            <a title="Accueil" class="container3d" id="homeContainer" href="./index.php"></a>
             
             <?php if (isset($_SESSION['userIsAdmin']) && $_SESSION['userIsAdmin']) { ?>
 
-            <a title="Panneau d'administration" class="container3d" id="adminPanelContainer" href="#"></a>
+            <a title="Panneau d'administration" class="container3d" id="adminPanelContainer" href="./index.php"></a>
 
             <?php } ?>
 
             <?php if (isset($_SESSION['userIsLoggedIn']) && $_SESSION['userIsLoggedIn']) { ?>
 
-            <a title="Connexion Admin" class="container3d" id="adminLoginContainer" href="&admin=true"></a>
-            <a title="Se déconnecter" class="container3d" id="logoutContainer" href="&logout=true"></a>
+            <a title="Connexion Admin" class="container3d" id="adminLoginContainer" href="./index.php&admin=true"></a>
+            <a title="Se déconnecter" class="container3d" id="logoutContainer" href="./index.php&logout=true"></a>
 
             <?php } else {?>
 
-            <a title="Se connecter" class="container3d" id="loginContainer" href="&login=true"></a>
+            <a title="Se connecter" class="container3d" id="loginContainer" href="./index.php&login=true"></a>
 
             <?php } ?>
         </nav>
