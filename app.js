@@ -3,6 +3,8 @@ import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader
 
 let scenes = [], camera, renderer, globalContainer, gltfLoader, meshes;
 
+let clock = new THREE.Clock();
+
 let homeMesh, loginMesh, adminLoginMesh, logoutMesh, adminPanelMesh;
 
 let homeContainer, loginContainer, adminLoginContainer, logoutContainer, adminPanelContainer
@@ -12,6 +14,8 @@ let viewportHeight;
 
 let navbarItems = [];
 
+let adminLoginAnimation, logoutAnimation;
+let adminLoginAnimationData, logoutAnimationData;
 
 function init() {  
 
@@ -77,6 +81,29 @@ function init() {
                             adminLoginMesh = mesh.scene;
                             adminLoginScene.add(adminLoginMesh);
                             adminLoginScene.add(light);
+
+                            adminLoginAnimation = mesh.animations;
+                            adminLoginAnimationData = {
+                                mixer:  new THREE.AnimationMixer(adminLoginMesh),
+                                clips: adminLoginAnimation,
+                                lockClip: undefined,
+                                unlockClip: undefined,
+                                lockAction: undefined,
+                                unlockAction: undefined,
+                            };
+
+                            adminLoginAnimationData.lockClip = THREE.AnimationClip.findByName(adminLoginAnimationData.clips, 'lock');
+                            adminLoginAnimationData.unlockClip = THREE.AnimationClip.findByName(adminLoginAnimationData.clips, 'unlock');
+                            
+                            adminLoginAnimationData.lockAction = adminLoginAnimationData.mixer.clipAction(adminLoginAnimationData.lockClip);
+                            adminLoginAnimationData.unlockAction = adminLoginAnimationData.mixer.clipAction(adminLoginAnimationData.unlockClip);
+
+                            adminLoginAnimationData.lockAction.setLoop(THREE.LoopOnce);
+                            adminLoginAnimationData.lockAction.clampWhenFinished = true;
+                            
+                            adminLoginAnimationData.unlockAction.setLoop(THREE.LoopOnce);
+                            adminLoginAnimationData.unlockAction.clampWhenFinished = true;
+    
                         }                        
                         break;
                         
@@ -88,7 +115,29 @@ function init() {
 
                             logoutMesh = mesh.scene;
                             logoutScene.add(logoutMesh);
-                            logoutScene.add(light);                            
+                            logoutScene.add(light);
+
+                            logoutAnimation = mesh.animations;
+                            logoutAnimationData = {
+                                mixer:  new THREE.AnimationMixer(logoutMesh),
+                                clips: logoutAnimation,
+                                closeClip: undefined,
+                                openClip: undefined,
+                                closeAction: undefined,
+                                openAction: undefined,
+                            };
+                            console.log(logoutAnimationData.clips);
+                            logoutAnimationData.closeClip = THREE.AnimationClip.findByName(logoutAnimationData.clips, 'ferme');
+                            logoutAnimationData.openClip = THREE.AnimationClip.findByName(logoutAnimationData.clips, 'ouvre');
+                            
+                            logoutAnimationData.closeAction = logoutAnimationData.mixer.clipAction(logoutAnimationData.closeClip);
+                            logoutAnimationData.openAction = logoutAnimationData.mixer.clipAction(logoutAnimationData.openClip);
+
+                            logoutAnimationData.closeAction.setLoop(THREE.LoopOnce);
+                            logoutAnimationData.closeAction.clampWhenFinished = true;
+                            
+                            logoutAnimationData.openAction.setLoop(THREE.LoopOnce);
+                            logoutAnimationData.openAction.clampWhenFinished = true;   
                         }                        
                         break;
 
@@ -107,9 +156,21 @@ function init() {
                         document.querySelectorAll('.container3d').forEach((container) => {
                             container.addEventListener('mouseenter', () => {
                                 container.classList.add('hovered');
+                                if (container.id == 'adminLoginContainer') {
+                                    unlockAnimation();
+                                }
+                                if (container.id == 'logoutContainer') {
+                                    openAnimation();
+                                }
                             });
                             container.addEventListener('mouseleave', () => {
                                 container.classList.remove('hovered');
+                                if (container.id == 'adminLoginContainer') {
+                                    lockAnimation();
+                                }
+                                if (container.id == 'logoutContainer') {
+                                    closeAnimation();
+                                }
                             });
                         });
 
@@ -147,32 +208,21 @@ function init() {
 
 //render loop
 function animate() {
+    let delta = clock.getDelta();
+    if (adminLoginAnimationData != undefined) {
+        adminLoginAnimationData.mixer.update(delta);
+    }
+    if (logoutAnimationData != undefined) {
+        logoutAnimationData.mixer.update(delta);
+    }
+    
     navbarItems.forEach((navbarItem) => {
 
         if(navbarItem.mesh != undefined) {
 
             if (navbarItem.container.classList.contains('hovered')) {
-                
-                if (navbarItem.container == adminLoginContainer) {
-
-                }
-                
-                if (navbarItem.container == logoutContainer) {
-
-                }
-
-                let rotationDirection = 1;
-
-                if (navbarItem.mesh.rotation.y > Math.PI/4) {
-                    rotationDirection = 0;
-                } else if (navbarItem.mesh.rotation.y < 0) {
-                    rotationDirection = 1;
-                }
-
-                if (rotationDirection) {
+                if (navbarItem.mesh.rotation.y < Math.PI/4) {
                     navbarItem.mesh.rotation.y += 0.01;
-                } else {
-                    navbarItem.mesh.rotation.y -= 0.01;
                 }
             } else {
                 if (navbarItem.mesh.rotation.y > 0) {
@@ -224,8 +274,6 @@ function render() {
 
 }
 
-
-
 //ONREADY
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -247,3 +295,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 });
+
+function unlockAnimation() {
+    adminLoginAnimationData.lockAction.stop();
+    adminLoginAnimationData.unlockAction.stop();
+    adminLoginAnimationData.unlockAction.play();
+}
+
+function lockAnimation() {
+    adminLoginAnimationData.lockAction.stop();
+    adminLoginAnimationData.unlockAction.stop();
+    adminLoginAnimationData.lockAction.play();    
+}
+
+function openAnimation() {
+    logoutAnimationData.closeAction.stop();
+    logoutAnimationData.openAction.stop();
+    logoutAnimationData.openAction.play();
+}
+
+function closeAnimation() {
+    logoutAnimationData.closeAction.stop();
+    logoutAnimationData.openAction.stop();
+    logoutAnimationData.closeAction.play();    
+}
