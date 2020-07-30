@@ -10,6 +10,8 @@ let homeContainer, loginContainer, adminLoginContainer, logoutContainer, adminPa
 let viewportWidth;
 let viewportHeight;
 
+let navbarItems = [];
+
 
 function init() {  
 
@@ -27,11 +29,11 @@ function init() {
 
     //loader
     meshes = [
-        './meshes/home.gltf',
-        './meshes/key.gltf',
-        './meshes/lock.gltf',
-        './meshes/door.gltf',
-        './meshes/gear.gltf'
+        './meshes/home.glb',
+        './meshes/key.glb',
+        './meshes/lock.glb',
+        './meshes/door.glb',
+        './meshes/gear.glb',
     ];
 
     gltfLoader = new GLTFLoader();
@@ -40,8 +42,86 @@ function init() {
         gltfLoader.load(
             meshes[i],
             function(mesh) {
-        
-                console.log(mesh.scene);
+                
+                let light = new THREE.AmbientLight();
+                //gestion des scenes affichées
+                switch (i) {
+                    case 0:
+                        let homeScene = new THREE.Scene();
+                        homeScene.element = homeContainer;
+                        scenes.push(homeScene);
+
+                        homeMesh = mesh.scene;
+                        homeScene.add(homeMesh);
+                        homeScene.add(light);
+                        break;
+
+                    case 1:
+                        if (loginContainer != undefined) {
+                            let loginScene = new THREE.Scene();
+                            loginScene.element = loginContainer;
+                            scenes.push(loginScene);
+
+                            loginMesh = mesh.scene;
+                            loginScene.add(loginMesh);
+                            loginScene.add(light);
+                        }                        
+                        break;
+                        
+                    case 2:
+                        if (adminLoginContainer != undefined) {    
+                            let adminLoginScene = new THREE.Scene();
+                            adminLoginScene.element = adminLoginContainer;
+                            scenes.push(adminLoginScene);
+
+                            adminLoginMesh = mesh.scene;
+                            adminLoginScene.add(adminLoginMesh);
+                            adminLoginScene.add(light);
+                        }                        
+                        break;
+                        
+                    case 3:
+                        if (logoutContainer != undefined) {    
+                            let logoutScene = new THREE.Scene();
+                            logoutScene.element = logoutContainer;
+                            scenes.push(logoutScene);
+
+                            logoutMesh = mesh.scene;
+                            logoutScene.add(logoutMesh);
+                            logoutScene.add(light);                            
+                        }                        
+                        break;
+
+                    case 4:
+                        if (adminPanelContainer != undefined) {    
+                            let adminPanelScene = new THREE.Scene();
+                            adminPanelScene.element = adminPanelContainer;
+                            scenes.push(adminPanelScene);
+
+                            adminPanelMesh = mesh.scene;
+                            adminPanelScene.add(adminPanelMesh);
+                            adminPanelScene.add(light);                           
+                        }          
+                        
+                        //hover sur les containers
+                        document.querySelectorAll('.container3d').forEach((container) => {
+                            container.addEventListener('mouseenter', () => {
+                                container.classList.add('hovered');
+                            });
+                            container.addEventListener('mouseleave', () => {
+                                container.classList.remove('hovered');
+                            });
+                        });
+                        //liste containers
+                        navbarItems = [
+                            {container: homeContainer, mesh: homeMesh},
+                            {container: loginContainer, mesh: loginMesh},
+                            {container: adminLoginContainer, mesh: adminLoginMesh},
+                            {container: logoutContainer, mesh: logoutMesh},
+                            {container: adminPanelContainer, mesh: adminPanelMesh},
+                        ];
+                        break;
+                }
         
             }
         );
@@ -54,16 +134,8 @@ function init() {
     let far = 20;
 
     camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.set(0, 0, 2);
-    
-    //scenes
-    let light = THREE.AmbientLight(0xffffff, 2);
-
-    let homeScene = new THREE.Scene();
-    homeScene.element = homeContainer;
-    homeScene.add(homeMesh);
-    homeScene.add(light);
-    scenes.push(homeScene);
+    camera.position.set(2, 0, 4);
+    camera.lookAt(0, 0, 0);
 
     //renderer
     renderer = new THREE.WebGLRenderer({antialias:true, alpha: true, canvas: globalContainer});
@@ -75,9 +147,31 @@ function init() {
 
 //render loop
 function animate() {
+    navbarItems.forEach((navbarItem) => {
+        if(navbarItem.mesh != undefined) {
+            if (navbarItem.container.classList.contains('hovered')) {
+                let rotationDirection = 1;
+
+                if (navbarItem.mesh.rotation.y > Math.PI/4) {
+                    rotationDirection = 0;
+                } else if (navbarItem.mesh.rotation.y < 0) {
+                    rotationDirection = 1;
+                }
+
+                if (rotationDirection) {
+                    navbarItem.mesh.rotation.y += 0.01;
+                } else {
+                    navbarItem.mesh.rotation.y -= 0.01;
+                }
+            } else {
+                if (navbarItem.mesh.rotation.y > 0) {
+                    navbarItem.mesh.rotation.y -= 0.01;
+                }
+            }
+        }
+    });
 
     requestAnimationFrame(animate);
-
     render();
 
 }
@@ -100,12 +194,12 @@ function render() {
       let sceneWidth = sceneBoundingRect.right - sceneBoundingRect.left;
       let sceneHeight = sceneBoundingRect.bottom - sceneBoundingRect.top;
       let sceneLeft = sceneBoundingRect.left;
-      let sceneTop = sceneBoundingRect.top;
+      let sceneTop = viewportHeight - sceneBoundingRect.top - sceneHeight;
   
       renderer.setViewport(sceneLeft, sceneTop, sceneWidth, sceneHeight);
       renderer.setScissor(sceneLeft, sceneTop, sceneWidth, sceneHeight);
   
-      camera.aspect = width / height;
+      camera.aspect = sceneWidth / sceneHeight;
       camera.updateProjectionMatrix();
   
       renderer.render(scene, camera);
@@ -115,21 +209,23 @@ function render() {
 
 }
 
-//responsive
-window.addEventListener('resize', () => {
 
-    camera.aspect = viewportWidth / viewportHeight;
-
-    renderer.setSize(viewportWidth, viewportHeight);
-
-    camera.updateProjectionMatrix();
-
-});
 
 //ONREADY
 document.addEventListener('DOMContentLoaded', () => {
 
     init();
     animate();
+
+    //responsive
+    window.addEventListener('resize', () => {
+
+        camera.aspect = viewportWidth / viewportHeight;
+
+        renderer.setSize(viewportWidth, viewportHeight);
+
+        camera.updateProjectionMatrix();
+
+    });
 
 });
